@@ -1,10 +1,13 @@
 <template>
   <div>
     <div class="card" style="margin-bottom: 10px">
-      <el-input style="width: 300px;" v-model="data.name" class="w-50 m-2" placeholder="请输入课程名称"
+      <el-input style="width: 200px; margin-right: 10px" v-model="data.name" placeholder="请输入课程名称查询"
                 :prefix-icon="Search"/>
-      <el-button style="margin-left: 10px" type="primary">查询</el-button>
-      <el-button type="info">重置</el-button>
+      <el-input style="width: 200px; margin-right: 10px" v-model="data.no" placeholder="请输入课程编号查询"
+                :prefix-icon="Search"/>
+      <el-input style="width: 200px;" v-model="data.teacher" placeholder="请输入任课老师查询" :prefix-icon="Search"/>
+      <el-button style="margin-left: 10px" type="primary" @click="load">查询</el-button>
+      <el-button type="info" @click="reset">重置</el-button>
     </div>
 
     <div class="card" style="margin-bottom: 10px">
@@ -49,15 +52,20 @@ const data = reactive({
   name: '',
   tableData: [],
   total: 0,
-  pageSize: 1,  // 当前页面
-  pageNum: 1   // 每页个数
+  pageNum: 1,  // 当前页面
+  pageSize: 5,  // 每页个数
+  no: '',
+  teacher: ''
 })
 
 const load = () => {
   request.get('/course/selectPage', {
     params: {
       pageNum: data.pageNum,
-      pageSize: data.pageSize
+      pageSize: data.pageSize,
+      name: data.name,
+      no: data.no,
+      teacher: data.teacher,
     }
   }).then(res => {
     data.tableData = res.data?.list || []
@@ -65,6 +73,12 @@ const load = () => {
   })
 }
 const handeCurrentChange = (pageNum) => {
+  load()
+}
+const reset = () => {
+  data.name = ''
+  data.no = ''
+  data.teacher = ''
   load()
 }
 load()
