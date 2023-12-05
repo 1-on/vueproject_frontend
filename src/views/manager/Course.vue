@@ -12,7 +12,7 @@
 
     <div class="card" style="margin-bottom: 10px">
       <div style="margin-bottom: 10px">
-        <el-button type="primary">新增</el-button>
+        <el-button type="primary" @click="handleAdd">新增</el-button>
       </div>
 
       <div>
@@ -25,8 +25,8 @@
           <el-table-column prop="teacher" label="任课老师"/>
           <el-table-column>
             <template #default="scope">
-              <el-button size="small" type="primary">编辑</el-button>
-              <el-button size="small" type="danger">编辑</el-button>
+              <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -39,6 +39,32 @@
                      layout="prev, pager, next" :total="data.total"/>
     </div>
 
+    <el-dialog width="35%" v-model="data.formVisible" title="课程信息">
+      <el-form :model="data.form" label-width="100px" label-position="right" style="padding-right: 40px">
+        <el-form-item label="课程名称">
+          <el-input v-model="data.form.name" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="课程编号">
+          <el-input v-model="data.form.no" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="课程描述">
+          <el-input v-model="data.form.descr" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="课时">
+          <el-input v-model="data.form.times" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="课程老师">
+          <el-input v-model="data.form.teacher" autocomplete="off"/>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.formVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save">保 存</el-button>
+      </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -47,6 +73,7 @@
 import {reactive} from "vue";
 import {Search} from "@element-plus/icons-vue";
 import request from "@/utils/request";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 const data = reactive({
   name: '',
@@ -55,8 +82,47 @@ const data = reactive({
   pageNum: 1,  // 当前页面
   pageSize: 5,  // 每页个数
   no: '',
-  teacher: ''
+  teacher: '',
+  formVisible: false,
+  form: {}
 })
+
+const handleDelete = (id) => {
+  ElMessageBox.confirm("删除数据后无法恢复，确认删除？", "确认删除", {type: 'warning'}).then(res => {
+    request.delete('/course/delete/' + id).then(res => {
+      if (res.code === '200') {
+        load()
+        ElMessage.success("请求成功")
+      } else {
+        ElMessage.error(res.msg)
+      }
+    }).catch(res => {})
+  })
+
+}
+const handleEdit = (row) => {
+  data.form = JSON.parse(JSON.stringify(row))
+  data.formVisible = true;
+}
+
+// 保存信息到后台
+const save = () => {
+  request.request(
+      {
+        url: data.form.id ? '/course/update' : '/course/add',
+        method: data.form.id ? 'PUT' : 'POST',
+        data: data.form
+      }
+  ).then(res => {
+    if (res.code === '200') {
+      ElMessage.success("操作成功")
+      load()
+      data.formVisible = false
+    } else {
+      ElMessage.error(res.meg)
+    }
+  })
+}
 
 const load = () => {
   request.get('/course/selectPage', {
@@ -81,5 +147,10 @@ const reset = () => {
   data.teacher = ''
   load()
 }
+const handleAdd = () => {
+  data.form = {}
+  data.formVisible = true
+}
+
 load()
 </script>
