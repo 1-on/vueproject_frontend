@@ -31,7 +31,9 @@
     </div>
 
     <div class="card">
-      <el-pagination background layout="prev, pager, next" :total="1000"/>
+      <el-pagination v-model:current-page="data.pageNum" v-model:page-size="data.pageSize" background
+                     @current-change="handeCurrentChange"
+                     layout="prev, pager, next" :total="data.total"/>
     </div>
 
   </div>
@@ -41,20 +43,29 @@
 
 import {reactive} from "vue";
 import {Search} from "@element-plus/icons-vue";
+import request from "@/utils/request";
 
 const data = reactive({
   name: '',
-  tableData: [
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-    {id: '1', name: "大学英语", no: "ABC11",descr: '六级过不了怎么办',times:3,teacher:"tom"},
-
-  ]
+  tableData: [],
+  total: 0,
+  pageSize: 1,  // 当前页面
+  pageNum: 1   // 每页个数
 })
+
+const load = () => {
+  request.get('/course/selectPage', {
+    params: {
+      pageNum: data.pageNum,
+      pageSize: data.pageSize
+    }
+  }).then(res => {
+    data.tableData = res.data?.list || []
+    data.total = res.data?.total || 0
+  })
+}
+const handeCurrentChange = (pageNum) => {
+  load()
+}
+load()
 </script>
