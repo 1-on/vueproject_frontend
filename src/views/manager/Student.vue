@@ -1,11 +1,10 @@
 <template>
   <div>
     <div class="card" style="margin-bottom: 10px">
-      <el-input style="width: 200px; margin-right: 10px" v-model="data.name" placeholder="请输入课程名称查询"
+      <el-input style="width: 200px; margin-right: 10px" v-model="data.username" placeholder="请输入账号查询"
                 :prefix-icon="Search"/>
-      <el-input style="width: 200px; margin-right: 10px" v-model="data.no" placeholder="请输入课程编号查询"
+      <el-input style="width: 200px; margin-right: 10px" v-model="data.name" placeholder="请输入名称查询"
                 :prefix-icon="Search"/>
-      <el-input style="width: 200px;" v-model="data.teacher" placeholder="请输入任课老师查询" :prefix-icon="Search"/>
       <el-button style="margin-left: 10px" type="primary" @click="load">查询</el-button>
       <el-button type="info" @click="reset">重置</el-button>
     </div>
@@ -18,11 +17,13 @@
       <div>
         <el-table :data="data.tableData" style="width: 100%">
           <el-table-column prop="id" label="序号" width="100"/>
-          <el-table-column prop="name" label="课程名称"/>
-          <el-table-column prop="no" label="课程编号"/>
-          <el-table-column prop="descr" label="课程描述"/>
-          <el-table-column prop="times" label="课时"/>
-          <el-table-column prop="teacher" label="任课老师"/>
+          <el-table-column prop="username" label="学生账号"/>
+          <el-table-column prop="name" label="学生名称"/>
+          <el-table-column prop="sex" label="性别"/>
+          <el-table-column prop="phone" label="手机号"/>
+          <el-table-column prop="email" label="邮箱"/>
+          <el-table-column prop="birth" label="生日"/>
+          <el-table-column prop="awatar" label="头像"/>
           <el-table-column label="操作" width="180px">
             <template #default="scope">
               <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
@@ -39,22 +40,33 @@
                      layout="prev, pager, next" :total="data.total"/>
     </div>
 
-    <el-dialog width="35%" v-model="data.formVisible" title="课程信息">
-      <el-form :model="data.form" label-width="100px" label-position="right" style="padding-right: 40px">
-        <el-form-item label="课程名称">
+    <el-dialog width="35%" v-model="data.formVisible" title="学生信息">
+      <el-form :rules="rules" ref="formRef" :model="data.form" label-width="100px" label-position="right"
+               style="padding-right: 40px">
+        <el-form-item label="学生账号" prop="username">
+          <el-input v-model="data.form.username" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="学生密码" prop="password">
+          <el-input show-password v-model="data.form.password" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="学生名称">
           <el-input v-model="data.form.name" autocomplete="off"/>
         </el-form-item>
-        <el-form-item label="课程编号">
-          <el-input v-model="data.form.no" autocomplete="off"/>
+        <el-form-item label="手机号">
+          <el-input v-model="data.form.phone" autocomplete="off"/>
         </el-form-item>
-        <el-form-item label="课程描述">
-          <el-input v-model="data.form.descr" autocomplete="off"/>
+        <el-form-item label="邮箱">
+          <el-input v-model="data.form.email" autocomplete="off"/>
         </el-form-item>
-        <el-form-item label="课时">
-          <el-input v-model="data.form.times" autocomplete="off"/>
+        <el-form-item label="性别">
+          <el-radio-group v-model="data.form.sex">
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="课程老师">
-          <el-input v-model="data.form.teacher" autocomplete="off"/>
+        <el-form-item label="生日">
+          <el-date-picker style="width: 100%" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                          v-model="data.form.birth"></el-date-picker>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -70,26 +82,27 @@
 
 <script setup>
 
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {Search} from "@element-plus/icons-vue";
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
 
+const baseUrl = '/student'
+
 const data = reactive({
-  name: '',
+  username: '',
   tableData: [],
   total: 0,
   pageNum: 1,  // 当前页面
   pageSize: 5,  // 每页个数
-  no: '',
-  teacher: '',
+  name: '',
   formVisible: false,
   form: {}
 })
 
 const handleDelete = (id) => {
   ElMessageBox.confirm("删除数据后无法恢复，确认删除？", "确认删除", {type: 'warning'}).then(res => {
-    request.delete('/course/delete/' + id).then(res => {
+    request.delete(baseUrl + '/delete/' + id).then(res => {
       if (res.code === '200') {
         load()
         ElMessage.success("请求成功")
@@ -108,31 +121,34 @@ const handleEdit = (row) => {
 
 // 保存信息到后台
 const save = () => {
-  request.request(
-      {
-        url: data.form.id ? '/course/update' : '/course/add',
-        method: data.form.id ? 'PUT' : 'POST',
-        data: data.form
-      }
-  ).then(res => {
-    if (res.code === '200') {
-      ElMessage.success("操作成功")
-      load()
-      data.formVisible = false
-    } else {
-      ElMessage.error(res.meg)
+  formRef.value.validate((valid) => {
+    if (valid) {
+      request.request(
+          {
+            url: data.form.id ? baseUrl + '/update' : '/student/add',
+            method: data.form.id ? 'PUT' : 'POST',
+            data: data.form
+          }
+      ).then(res => {
+        if (res.code === '200') {
+          ElMessage.success("操作成功")
+          load()
+          data.formVisible = false
+        } else {
+          ElMessage.error(res.meg)
+        }
+      })
     }
   })
 }
 
 const load = () => {
-  request.get('/course/selectPage', {
+  request.get(baseUrl + '/selectPage', {
     params: {
       pageNum: data.pageNum,
       pageSize: data.pageSize,
+      username: data.username,
       name: data.name,
-      no: data.no,
-      teacher: data.teacher,
     }
   }).then(res => {
     data.tableData = res.data?.list || []
@@ -143,11 +159,21 @@ const handeCurrentChange = (pageNum) => {
   load()
 }
 const reset = () => {
+  data.username = ''
   data.name = ''
-  data.no = ''
-  data.teacher = ''
   load()
 }
+
+const rules = reactive({
+  username: [
+    {required: true, message: '请输入账号', trigger: 'blur'},
+  ],
+  password: [
+    {required: true, message: '请输入密码', trigger: 'blur'},
+  ],
+})
+
+const formRef = ref()
 const handleAdd = () => {
   data.form = {}
   data.formVisible = true
