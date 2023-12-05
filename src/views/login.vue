@@ -3,15 +3,15 @@
     <div class="login-container">
       <div style="width: 350px" class="login-box">
         <div style="font-weight:bold;font-size: 24px;text-align: center;margin-bottom: 30px">登 录</div>
-        <el-form :model="data.form">
-          <el-form-item>
+        <el-form :model="data.form" ref="formRef" :rules="rules">
+          <el-form-item prop="username">
             <el-input prefix-icon="User" v-model="data.form.username" placeholder="请输入账号"/>
           </el-form-item>
-          <el-form-item>
-            <el-input prefix-icon="Lock" v-model="data.form.password" placeholder="请输入密码"/>
+          <el-form-item prop="password">
+            <el-input prefix-icon="Lock" show-password v-model="data.form.password" placeholder="请输入密码"/>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" style="width: 100%">登 录</el-button>
+            <el-button type="primary" style="width: 100%" @click="login">登 录</el-button>
           </el-form-item>
         </el-form>
         <div style="margin-top: 30px;text-align: right">
@@ -24,10 +24,39 @@
 </template>
 
 <script setup>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
+import {ElMessage} from "element-plus";
+import request from "@/utils/request";
+import router from "@/router";
 
 const data = reactive({
   form: {}
+})
+const formRef = ref()
+const login = () => {
+  formRef.value.validate((valid) => {
+    if (valid) {
+      request.post('/login', data.form).then(res => {
+        if (res.code === '200') {
+          localStorage.setItem('student-user', JSON.stringify(res.data))
+          ElMessage.success("登录成功")
+          router.push('/home')
+        } else {
+          ElMessage.error(res.msg)
+        }
+      })
+    }
+  })
+}
+
+
+const rules = reactive({
+  username: [
+    {required: true, message: '请输入账号', trigger: 'blur'},
+  ],
+  password: [
+    {required: true, message: '请输入密码', trigger: 'blur'},
+  ],
 })
 </script>
 
