@@ -23,7 +23,12 @@
           <el-table-column prop="phone" label="手机号"/>
           <el-table-column prop="email" label="邮箱"/>
           <el-table-column prop="birth" label="生日"/>
-          <el-table-column prop="awatar" label="头像"/>
+          <el-table-column prop="awatar" label="头像">
+            <template #default="scope">
+              <el-image v-if="scope.row.awatar" :src="scope.row.awatar" :preview-src-list="[scope.row.awatar]"
+                        style="width: 40px;height: 40px;border-radius: 5px "></el-image>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="180px">
             <template #default="scope">
               <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
@@ -40,7 +45,7 @@
                      layout="prev, pager, next" :total="data.total"/>
     </div>
 
-    <el-dialog width="35%" v-model="data.formVisible" title="学生信息">
+    <el-dialog width="35%" v-model="data.formVisible" title="学生信息" destroy-on-close>
       <el-form :rules="rules" ref="formRef" :model="data.form" label-width="100px" label-position="right"
                style="padding-right: 40px">
         <el-form-item label="学生账号" prop="username">
@@ -67,6 +72,12 @@
         <el-form-item label="生日">
           <el-date-picker style="width: 100%" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
                           v-model="data.form.birth"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="学生头像">
+          <el-upload action="http://localhost:9090/files/upload" list-type="picture"
+                     :on-success="handleImgUploadSuccess">
+            <el-button>上传头像</el-button>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -99,6 +110,10 @@ const data = reactive({
   formVisible: false,
   form: {}
 })
+
+const handleImgUploadSuccess = (res) => {
+  data.form.awatar = res.data
+}
 
 const handleDelete = (id) => {
   ElMessageBox.confirm("删除数据后无法恢复，确认删除？", "确认删除", {type: 'warning'}).then(res => {
@@ -135,7 +150,7 @@ const save = () => {
           load()
           data.formVisible = false
         } else {
-          ElMessage.error(res.meg)
+          ElMessage.error(res.msg)
         }
       })
     }

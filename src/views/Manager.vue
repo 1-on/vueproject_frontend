@@ -9,8 +9,8 @@
         </div>
       </div>
       <div style="width: fit-content; padding-right: 10px; display: flex; align-items: center;">
-        <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" alt=""
-             style="width: 40px; height: 40px">
+        <img :src="user.awatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt=""
+             style="width: 40px; height: 40px;border-radius: 50%">
         <span style="margin-left: 5px">{{ user.name }}</span>
       </div>
     </div>
@@ -36,11 +36,17 @@
               </el-icon>
               <span>课程管理</span>
             </template>
-            <el-menu-item index="/course">
+            <el-menu-item index="/course" v-if="user.role ==='ADMIN'">
               <el-icon>
                 <Document/>
               </el-icon>
               <span>课程信息</span>
+            </el-menu-item>
+            <el-menu-item index="/courseList">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>学生选课</span>
             </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="3" v-if="user.role ==='ADMIN'">
@@ -57,7 +63,7 @@
               <span>学生信息</span>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="/person">
+          <el-menu-item index="/person" v-if="user.role ==='STUDENT'">
             <el-icon>
               <User/>
             </el-icon>
