@@ -42,11 +42,17 @@
               </el-icon>
               <span>课程信息</span>
             </el-menu-item>
-            <el-menu-item index="/courseList">
+            <el-menu-item index="/courseList" v-if="user.role ==='STUDENT'">
               <el-icon>
                 <Document/>
               </el-icon>
               <span>学生选课</span>
+            </el-menu-item>
+            <el-menu-item index="/studentCourse">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>选课记录</span>
             </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="3" v-if="user.role ==='ADMIN'">
