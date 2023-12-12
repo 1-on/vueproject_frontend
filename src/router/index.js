@@ -7,6 +7,7 @@ const router = createRouter({
             path: '/',
             name: 'Manager',
             component: () => import('@/views/Manager.vue'),
+            meta: {requiresAuth: true},
             redirect: '/home',
             children: [
                 {path: 'home', name: 'Home', component: () => import('@/views/manager/Home.vue')},
@@ -14,7 +15,11 @@ const router = createRouter({
                 {path: 'student', name: 'Student', component: () => import('@/views/manager/Student.vue')},
                 {path: 'person', name: 'Person', component: () => import('@/views/manager/Person.vue')},
                 {path: 'courseList', name: 'CourseList', component: () => import('@/views/manager/CourseList.vue')},
-                {path: 'studentCourse', name: 'StudentCourse', component: () => import('@/views/manager/StudentCourse.vue')},
+                {
+                    path: 'studentCourse',
+                    name: 'StudentCourse',
+                    component: () => import('@/views/manager/StudentCourse.vue')
+                },
             ]
         },
         {
@@ -28,6 +33,15 @@ const router = createRouter({
             component: () => import('@/views/Regitser.vue'),
         }
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const isAuthenticated = localStorage.getItem('student-user')
+    if (to.matched.some(route => route.meta.requiresAuth) && !isAuthenticated) {
+        next('/login')
+    } else {
+        next();
+    }
 })
 
 export default router
