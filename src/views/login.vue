@@ -74,7 +74,7 @@ const rules = reactive({
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url("@/assets/imgs/bg.png");
+  background-image: url("@/assets/imgs/background.jpg");
   background-size: cover;
 }
 
