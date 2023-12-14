@@ -21,7 +21,7 @@
           </el-form-item>
         </el-form>
         <div style="margin-top: 30px;text-align: right">
-          还有没账号？ <a href="/register">注册</a>
+          还没有账号？ <a href="/register">注册</a>
         </div>
       </div>
     </div>
