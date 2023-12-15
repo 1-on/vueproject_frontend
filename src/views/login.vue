@@ -14,6 +14,7 @@
             <el-select style="width: 100%;" v-model="data.form.role">
               <el-option value="ADMIN" label="管理员"></el-option>
               <el-option value="STUDENT" label="学生"></el-option>
+              <el-option value="TEACHER" label="教师"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -44,7 +45,7 @@ const login = () => {
     if (valid) {
       request.post('/login', data.form).then(res => {
         if (res.code === '200') {
-          localStorage.setItem('student-user', JSON.stringify(res.data))
+          localStorage.setItem('user', JSON.stringify(res.data))
           ElMessage.success("登录成功")
           router.push('/home')
         } else {

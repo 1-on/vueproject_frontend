@@ -14,13 +14,16 @@
       <div>
         <el-table :data="data.tableData" style="width: 100%">
           <el-table-column prop="id" label="序号" width="100"/>
-          <el-table-column prop="name" label="课程名称"/>
-          <el-table-column prop="no" label="课程编号"/>
-          <el-table-column prop="studentName" label="学生名称"/>
+          <el-table-column prop="course.name" label="课程名称"/>
+          <el-table-column prop="course.no" label="课程编号"/>
+          <el-table-column v-if="data.user.role==='STUDENT'||data.user.role==='ADMIN'" prop="teacher.name"
+                           label="老师名称"/>
+          <el-table-column v-if="data.user.role==='TEACHER'||data.user.role==='ADMIN'" prop="student.name"
+                           label="学生名称"/>
           <el-table-column label="操作" width="180px">
             <template #default="scope">
               <el-button type="danger" @click="del(scope.row.id)">删除</el-button>
-              <el-button type="primary" @click="addGrade(scope.row)">打分</el-button>
+              <el-button type="primary" v-if="data.user.role==='TEACHER'" @click="addGrade(scope.row)">打分</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -36,7 +39,10 @@
     <el-dialog width="35%" v-model="data.formVisible" title="成绩信息">
       <el-form :model="data.gradeForm" label-width="100px" label-position="right" style="padding-right: 40px">
         <el-form-item label="课程名称">
-          <el-input v-model="data.gradeForm.name" autocomplete="off" disabled/>
+          <el-input v-model="data.gradeForm.courseName" autocomplete="off" disabled/>
+        </el-form-item>
+        <el-form-item label="学生姓名">
+          <el-input v-model="data.gradeForm.studentName" autocomplete="off" disabled/>
         </el-form-item>
         <el-form-item label="分数">
           <el-input v-model="data.gradeForm.score" autocomplete="off"/>
@@ -71,7 +77,7 @@ const data = reactive({
   pageNum: 1,  // 当前页面
   pageSize: 5,  // 每页个数
   no: '',
-  user: JSON.parse(localStorage.getItem("student-user") || "{}"),
+  user: JSON.parse(localStorage.getItem("user") || "{}"),
   gradeForm: {},
   formVisible: false
 })
@@ -87,9 +93,13 @@ const load = () => {
   if (data.user.role === 'STUDENT') {  // 学生登录 查询自己的选课记录
     params.studentId = data.user.id
   }
+  if (data.user.role === 'TEACHER') {  // 教师登录 查询自己课的选课记录
+    params.teacherId = data.user.id
+  }
   request.get('/studentCourse/selectPage', {
     params: params
   }).then(res => {
+    console.log(res)
     data.tableData = res.data?.list || []
     data.total = res.data?.total || 0
   })
@@ -119,9 +129,15 @@ const del = (id) => {
 
 const addGrade = (row) => {
   data.formVisible = true
-  data.gradeForm.name = row.name
+  data.gradeForm.courseName = row.course.name
+  data.gradeForm.studentName = row.student.name
   data.gradeForm.courseId = row.courseId
   data.gradeForm.studentId = row.studentId
+  data.gradeForm.course = {name: row.course.name}
+  data.gradeForm.student = {name: row.student.name}
+  console.log(row.course.name)
+  console.log(row.student.name)
+
 }
 
 const save = () => {

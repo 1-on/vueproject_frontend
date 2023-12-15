@@ -19,7 +19,7 @@
           <el-table-column prop="no" label="课程编号"/>
           <el-table-column prop="descr" label="课程描述"/>
           <el-table-column prop="times" label="课时"/>
-          <el-table-column prop="teacher" label="任课老师"/>
+          <el-table-column prop="teacher.name" label="任课老师"/>
           <el-table-column label="操作" width="180px">
             <template #default="scope">
               <el-button type="primary" @click="selectCourse(scope.row)">选课</el-button>
@@ -54,7 +54,7 @@ const data = reactive({
   pageSize: 5,  // 每页个数
   no: '',
   teacher: '',
-  student: JSON.parse(localStorage.getItem("student-user") || "{}"),
+  student: JSON.parse(localStorage.getItem("user") || "{}"),
 })
 
 

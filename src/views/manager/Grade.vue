@@ -14,12 +14,12 @@
       <div>
         <el-table :data="data.tableData" style="width: 100%">
           <el-table-column prop="id" label="序号" width="100"/>
-          <el-table-column prop="courseName" label="课程名称"/>
-          <el-table-column prop="studentName" label="学生名称"/>
+          <el-table-column prop="course.name" label="课程名称"/>
+          <el-table-column prop="student.name" label="学生名称"/>
           <el-table-column prop="score" label="分数"/>
           <el-table-column prop="comment" label="评语"/>
           <el-table-column prop="feedback" label="反馈"/>
-          <el-table-column label="操作" width="180px">
+          <el-table-column v-if="data.user.role==='ADMIN'||data.user.role==='STUDENT'" label="操作" width="180px">
             <template #default="scope">
               <el-button type="primary" @click="handleEdit(scope.row)" v-if="data.user.role==='ADMIN'">编辑</el-button>
               <el-button type="danger" @click="del(scope.row.id)" v-if="data.user.role==='ADMIN'">删除</el-button>
@@ -78,7 +78,7 @@ const data = reactive({
   pageNum: 1,  // 当前页面
   pageSize: 5,  // 每页个数
   no: '',
-  user: JSON.parse(localStorage.getItem("student-user") || "{}"),
+  user: JSON.parse(localStorage.getItem("user") || "{}"),
   formVisible: false
 })
 
@@ -92,6 +92,9 @@ const load = () => {
   }
   if (data.user.role === 'STUDENT') {  // 学生登录 查询自己的选课记录
     params.studentId = data.user.id
+  }
+  if (data.user.role === 'TEACHER') {  // 学生登录 查询自己的选课记录
+    params.teacherId = data.user.id
   }
   request.get('/grade/selectPage', {
     params: params

@@ -13,9 +13,11 @@ const router = createRouter({
                 {path: 'home', name: 'Home', component: () => import('@/views/manager/Home.vue')},
                 {path: 'course', name: 'Course', component: () => import('@/views/manager/Course.vue')},
                 {path: 'student', name: 'Student', component: () => import('@/views/manager/Student.vue')},
-                {path: 'person', name: 'Person', component: () => import('@/views/manager/Person.vue')},
+                {path: 'person_s', name: 'Person_s', component: () => import('@/views/manager/Person_S.vue')},
+                {path: 'person_t', name: 'Person_t', component: () => import('@/views/manager/Person_T.vue')},
                 {path: 'courseList', name: 'CourseList', component: () => import('@/views/manager/CourseList.vue')},
                 {path: 'grade', name: 'Grade', component: () => import('@/views/manager/Grade.vue')},
+                {path: 'teacher', name: 'Teacher', component: () => import('@/views/manager/Teacher.vue')},
                 {
                     path: 'studentCourse',
                     name: 'StudentCourse',
@@ -37,7 +39,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const isAuthenticated = localStorage.getItem('student-user')
+    const isAuthenticated = localStorage.getItem('user')
     if (to.matched.some(route => route.meta.requiresAuth) && !isAuthenticated) {
         next('/login')
     } else {

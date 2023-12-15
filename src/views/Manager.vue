@@ -82,8 +82,20 @@
               </el-icon>
               <span>学生信息</span>
             </el-menu-item>
+            <el-menu-item index="/teacher">
+              <el-icon>
+                <User/>
+              </el-icon>
+              <span>教师信息</span>
+            </el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="/person" v-if="user.role ==='STUDENT'">
+          <el-menu-item index="/person_s" v-if="user.role ==='STUDENT'">
+            <el-icon>
+              <User/>
+            </el-icon>
+            <span>个人资料</span>
+          </el-menu-item>
+          <el-menu-item index="/person_t" v-if="user.role ==='TEACHER'">
             <el-icon>
               <User/>
             </el-icon>
@@ -111,11 +123,11 @@ import {useRoute} from 'vue-router'
 import {Document, HomeFilled, Memo, SwitchButton, User, UserFilled} from "@element-plus/icons-vue";
 
 const $route = useRoute()
-const user = JSON.parse(localStorage.getItem('student-user') || '{}');
+const user = JSON.parse(localStorage.getItem('user') || '{}');
 console.log(user)
 
 const logout = () => {
-  localStorage.removeItem('student-user')
+  localStorage.removeItem('user')
 }
 </script>
 
