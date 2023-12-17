@@ -3,12 +3,14 @@
     <div
         style="height: 60px; background-color: #fff; display: flex; align-items: center; border-bottom: 1px solid #ddd">
       <div style="flex: 1">
-        <div style="padding-left: 20px; display: flex; align-items: center">
+        <div style="padding-left: 20px; display: flex; align-items: center;">
           <img src="@/assets/imgs/logo.png" alt="" style="width: 40px">
           <div style="font-weight: bold; font-size: 24px; margin-left: 5px">学生成绩管理系统</div>
         </div>
       </div>
       <div style="width: fit-content; padding-right: 10px; display: flex; align-items: center;">
+        <!-- 实时显示的时间 -->
+        <div style="margin-right: 10px;">{{ formattedTime }}</div>
         <img :src="user.awatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt=""
              style="width: 40px; height: 40px;border-radius: 50%">
         <span style="margin-left: 5px">{{ user.name }}</span>
@@ -121,10 +123,36 @@
 <script setup>
 import {useRoute} from 'vue-router'
 import {Document, HomeFilled, Memo, SwitchButton, User, UserFilled} from "@element-plus/icons-vue";
+import {computed, onMounted, reactive, ref} from "vue";
 
 const $route = useRoute()
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 console.log(user)
+
+const currentTime = ref(getCurrentTime());
+
+// 使用 onMounted 钩子在组件挂载时启动定时器
+onMounted(() => {
+  setInterval(() => {
+    currentTime.value = getCurrentTime();
+  }, 1000);
+});
+function getCurrentTime() {
+  return new Date();
+}
+
+// 使用 computed 计算属性格式化时间（包含年月日时分秒）
+const formattedTime = computed(() => {
+  const year = currentTime.value.getFullYear();
+  const month = (currentTime.value.getMonth() + 1).toString().padStart(2, '0');
+  const day = currentTime.value.getDate().toString().padStart(2, '0');
+  const hours = currentTime.value.getHours().toString().padStart(2, '0');
+  const minutes = currentTime.value.getMinutes().toString().padStart(2, '0');
+  const seconds = currentTime.value.getSeconds().toString().padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+});
+
+
 
 const logout = () => {
   localStorage.removeItem('user')
