@@ -137,6 +137,7 @@ onMounted(() => {
     currentTime.value = getCurrentTime();
   }, 1000);
 });
+
 function getCurrentTime() {
   return new Date();
 }
@@ -151,7 +152,6 @@ const formattedTime = computed(() => {
   const seconds = currentTime.value.getSeconds().toString().padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 });
-
 
 
 const logout = () => {
