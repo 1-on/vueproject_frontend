@@ -10,6 +10,9 @@
           <el-form-item prop="password">
             <el-input prefix-icon="Lock" show-password v-model="data.form.password" placeholder="请输入密码"/>
           </el-form-item>
+          <el-form-item prop="checkPassword">
+            <el-input prefix-icon="Lock" show-password v-model="data.form.checkPassword" placeholder="请再次输入密码"/>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" style="width: 100%" @click="register">注 册</el-button>
           </el-form-item>
@@ -48,6 +51,14 @@ const register = () => {
   })
 }
 
+const validateConfirmPassword = (rule, value, callback) => {
+  if (value !== data.form.password) {
+    callback(new Error('两次输入的密码不一致'));
+  } else {
+    callback();
+  }
+};
+
 
 const rules = reactive({
   username: [
@@ -55,6 +66,10 @@ const rules = reactive({
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
+  ],
+  checkPassword: [
+    {required: true, message: '请确认新密码', trigger: 'blur'},
+    {validator: validateConfirmPassword, trigger: 'blur'}
   ],
 })
 </script>
