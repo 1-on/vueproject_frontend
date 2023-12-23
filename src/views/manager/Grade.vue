@@ -90,10 +90,10 @@ const load = () => {
     courseName: data.courseName,
     studentName: data.studentName,
   }
-  if (data.user.role === 'STUDENT') {  // 学生登录 查询自己的选课记录
+  if (data.user.role === 'STUDENT') {  // 学生登录 查询自己的课程信息
     params.studentId = data.user.id
   }
-  if (data.user.role === 'TEACHER') {  // 学生登录 查询自己的选课记录
+  if (data.user.role === 'TEACHER') {  // 老师登录 查询自己的课程信息
     params.teacherId = data.user.id
   }
   request.get('/grade/selectPage', {

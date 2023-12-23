@@ -21,8 +21,8 @@
             <el-button type="primary" style="width: 100%" @click="login">登 录</el-button>
           </el-form-item>
         </el-form>
-        <div style="margin-top: 30px;text-align: right">
-          还没有账号？ <a href="/register">注册</a>
+        <div style="margin-top: 30px;text-align: center;">
+          <el-button @click="router.push('register')" style="background-color: rgba(255,255,255,0.3)" >注册</el-button>
         </div>
       </div>
     </div>

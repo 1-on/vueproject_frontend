@@ -17,8 +17,8 @@
             <el-button type="primary" style="width: 100%" @click="register">注 册</el-button>
           </el-form-item>
         </el-form>
-        <div style="margin-top: 30px;text-align: right">
-          已有账号？请 <a href="/login">登录</a>
+        <div style="margin-top: 30px;text-align: center">
+          <el-button @click="router.push('login')" style="background-color: rgba(255,255,255,0.3)" >注册</el-button>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@ const rules = reactive({
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url("@/assets/imgs/bg1.png");
+  background-image: url("@/assets/imgs/bg2.png");
   background-size: cover;
 }
 
